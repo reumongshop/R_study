@@ -1,0 +1,8 @@
+#사전 설정하기
+useNIADic()
+
+#데이터준비
+#데이터불러오기
+txt <- readLines("hiphop.txt")
+
+head(txt)

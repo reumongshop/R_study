@@ -1,0 +1,104 @@
+# "제주도 여행코스 추천" 검색어 결과를 그래프로 표시.
+# R script 콘솔 시용할 경우, setwd("c://Rstudy")
+
+# 패키지를 설치.
+install.packages("KoNLP") 
+install.packages("wordcloud") 
+install.packages("stringr") 
+
+# 패키지를 로딩.
+library(KoNLP)  
+library(wordcloud)
+library(stringr)  
+useSejongDic() 
+
+
+
+# 단어 추가
+# 제주도여행지.txt 를 읽어들인 후,
+# dataframe 으로 변경하여 기존 사전에 추가.
+mergeUserDic(data.frame(readLines("./Data6_prj/제주도여행지.txt"), "ncn"))
+
+
+
+
+
+# 데이터 읽어오기
+txt <- readLines("./Data6_prj/jeju.txt") 
+txt
+
+
+place <- sapply(txt,extractNoun,USE.NAMES=F)
+place   
+
+head(unlist(place), 30)
+
+
+cdata <- unlist(place) 
+
+
+
+
+
+
+
+# 한글 외 삭제 , 영어 
+place <- str_replace_all(cdata,"[^[:alpha:]]","")  
+place <- gsub(" ","", place)
+
+
+
+
+# 읽어들인 데이터로부터 제거할 단어 리스트 읽어오기
+txt <- readLines("./Data6_prj/제주도여행코스gsub.txt")
+txt
+
+cnt_txt <- length(txt)
+cnt_txt
+
+for( i in 1:cnt_txt) {
+  place <-gsub((txt[i]),"",place)     
+}
+
+View(place)
+
+
+# 두 글자 이상인 단어만 추출
+place <- Filter(function(x) {nchar(x) >= 2} ,place)
+
+
+# 현재까지의 작업을 파일로 저장
+write(unlist(place),"./result_files/jeju_2.txt") 
+
+
+
+
+
+
+
+# 저장된 파일 읽기
+rev <- read.table("./result_files/jeju_2.txt")
+nrow(rev) 
+
+
+
+# 단어 빈도 수 
+wordcount <- table(rev) 
+head(sort(wordcount, decreasing=T),30)
+
+
+
+library(RColorBrewer) 
+palete <- brewer.pal(8,"Set2") 
+
+
+
+
+wordcloud(names(wordcount),
+          freq=wordcount,
+          scale=c(3,1),
+          rot.per=0.25,
+          min.freq=5, 
+          random.order=F,
+          random.color=T,
+          colors=palete)

@@ -1,0 +1,170 @@
+---
+title: "20200407_서점의_고객데이터에_대한_가상사례"
+author: "areum"
+date: '2020 4 7 '
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+
+########################################################
+# 서점의 고객 데이터에 대한 가상 사례
+# (탐색적인 분석과 고객세분화 응용 사례)
+########################################################
+# 작업 파일 : cust_seg_smpl_280122.csv
+# --------------------------------------------------------
+# 작업 내용
+#--------------------------------------------------------
+# 최종구매후기간 recency와 구매한 서적의 수간의 관계 확인
+# 동일 좌표에 다수의 고객 존재 가능성이 있으므로 이를 처리
+
+# 가설 1
+# 보조선인 회귀선을 본다면 최근성이 낮을수록, 
+# 즉 구매한지 오래되었을 수록 구매한 서적의 수가 많음
+
+
+
+```{r results="asis"}
+knitr::opts_chunk$set(echo = TRUE)
+
+# 패키지 로드
+library(rmarkdown)
+library(knitr)
+
+# 데이터 불러오기
+book_data <- read.csv("../수업DATA/cust_seg_smpl_280122.csv")
+
+# 데이터 확인
+head(book_data)
+names(book_data)
+```
+
+```{r results="asis"}
+# 고객명 / 성별 / 연령 / 지역 / 구매일수 / 최종구매후기간 / 구매서적수 / 서적구매액 / 기타상품구매액 / 총구매액 / 관심장르 / 구매장르 / 가입기간 / SMS수신여부
+
+# 컬럼명 변경
+names(book_data) <- c("name", "sex", "age", "region", "recency", "buybooks", "money", "other_money", "total_money", "fav_type", "buy_type", "join_period", "sms_option")
+
+# 최종 구매 후 기간 recency와 구매한 서적의 수간의 관계 확인
+plot(book_data$recency, book_data$buybooks)
+
+# 동일 좌표에 다수의 고객 존재 가능성이 있으므로 이를 처리
+plot(jitter(book_data$recency), jitter(book_data$buybooks))
+
+library(ggplot2)
+
+ggplot(data=book_data,
+       aes(x=recency, y=buybooks)) +
+  geom_point()
+
+```
+
+```{r results="asis"}
+# 가설 1
+# 보조선인 회귀선을 본다면 최근성이 낮을수록, 
+# 즉 구매한지 오래되었을 수록 구매한 서적의 수가 많음
+
+# gsub함수로 쉼표 제거
+book_data$recency <- as.numeric(gsub(",", "", as.character(book_data$recency)))
+book_data$buybooks <- as.numeric(gsub(",", "", as.character(book_data$buybooks)))
+
+plot(data=book_data, x=recency, y=buybooks)
+plot(book_data,
+      names.arg=label,
+      ylab="buybooks",
+      xlab="recency",
+      ylim=c(0, 20),
+      main="구매한 기간 대비 구매 서적 수")
+# plot(jitter(book_data$buybooks), jitter(book_data$recency))
+
+# 파란 직선
+
+# abline(lm(book_data$buybooks~book_data$recency), col="blue", lwd=2, lty=1)
+
+```
+
+```{r results="asis"}
+
+```
+
+```{r results="asis"}
+
+```
+
+#---------------------------------------------------------
+
+# 가설 2
+# 구매한 책의 수가 많을수록 구매금액이 큼
+# 주로 비싼 책을 샀는지를 파악하기 위해 평균금액을 계산
+
+
+# 수행 내용
+#---------------------------------------------------------
+# 성별을 구분해서 특성 차이 비교
+#---------------------------------------------------------
+# 서적과 서적이외 구매액 비교
+
+# 1차 결론
+# 서적 구매는 많으나 기타 상품 구매가 약한 집단을 선정해
+# 집중적 cross-selling 노력 기울이는 것이 필요해 보임
+
+
+#---------------------------------------------------------
+# 대상 집단 조건 - 
+# 시각적으로 설정했던 기준선 영역에 해당하는 고객리스트 추출
+
+
+#---------------------------------------------------------
+# 선정된 집단의 프로파일 시각적으로 확인
+# 서적 구매수량과 성별 분포 확인 (여성은 pink)
+
+
+#---------------------------------------------------------
+# 전체고객의 평균/중위수 서적구매수량과 비교
+
+# 프로파일 확인 결과 중위수에 비해 서적구매수량이 많고, 
+# 평균에 비해서도 많은 편인 여성 고객들임
+
+# 2차 결론
+# 기타 상품 중 여성 선호 상품을 찾아 제안하는 방식으로 cross-sell
+# 캠페인 진행 필요해 보임
+
+
+#---------------------------------------------------------
+# 군집분석을 활용한 고객세분화
+
+# 고객집단을 표시할 색상을 임의로 지정
+# 번호순의 색상 이름 벡터 생성
+
+# 각 고객의 소속 집단이 어디인가에 따라 색상 표시
+
+
+#---------------------------------------------------------
+# 3차 결론
+# 서적 구매 장르의 수가 많다면 
+# 서적 구매 수량이 많을 가능성 높으므로
+# 비율을 새로 계산 (=구매한 서적 수량 대비 쟝르의 수)
+######################################################

@@ -1,0 +1,118 @@
+기사 검색 URL 
+
+http://news.donga.com/search?
+p=1&
+query=코로나19&
+check_news=1&
+more=1&
+sorting=1&
+search_date=1&
+v1=&
+v2=&
+range=1
+
+
+#########################################
+library("rvest")
+
+# 1. 기사 검색하기
+# 2. 기사 링크 가져오기
+# 3. 링크를 출력하기
+# 4. addr의 모든 내용을 순회하면서 기사 내용을 article.txt에 저장
+# 5. 파일의 모든 내용 가져오기
+# 6. 명사만 추출
+# 7. 빈도수 만들기 - 각 단어가 몇번씩 나왔는지
+# 8. 데이터 프레임으로 변환
+# 9. 필터링
+# 10. 워드클라우드 색상 판 생성
+# 11. 시드 설정
+# 12. 워드 클라우드 생성 
+
+
+
+
+library("rvest")
+
+# 1. 기사 검색하기
+url <- "http://news.donga.com/search?p=1&query=코로나19&check_news=1&more=1&sorting=1&search_date=1&v1=&v2=&range=1"
+
+url
+
+link <- read_html(url)
+link
+
+
+
+
+
+
+# 2. 기사 링크 가져오기
+addr <- link %>% html_nodes(".t") %>% html_nodes(".tit") %>% html_nodes("a") %>% html_attr("href")
+
+addr
+
+
+# 3. 링크를 출력하기
+for(url in addr){
+  print(url)  #url에 있는 기사들을 모아서 파일에 저장
+}
+
+
+
+
+# 4. addr의 모든 내용을 순회하면서
+# 기사 내용을 article.txt에 저장
+
+for(url in addr){
+  # url에 있는 기사들을 모아서 파일에 저장
+  # article_txt 클래스에 있는 내용만 저장하기
+  
+  content = read_html(url) %>% html_nodes(".article_txt") %>% html_text()
+  # print(content)
+  
+  # 저장하기
+  cat(content,file="article.txt", append = T)
+}
+
+content
+
+
+# 5. 파일의 모든 내용 가져오기
+txt <- readLines("article.txt")
+head(txt)
+
+
+# 6. 명사만 추출
+useNIADic()
+nouns <- extractNoun(txt)
+nouns
+
+# 7. 빈도수 만들기 - 각 단어가 몇번씩 나왔는지
+wordcount <- table(unlist(nouns))
+wordcount
+
+
+# 8. 데이터 프레임으로 변환
+df_word <- as.data.frame(wordcount, stringsAsFactors = F)
+df_word 
+class(df_word)
+
+
+# 9. 필터링
+df_word <- filter(df_word, nchar(Var1) >= 2)
+
+
+# 10. 워드클라우드 색상 판 생성
+pal <- brewer.pal(8, "Dark2")
+
+
+# 11. 시드 설정
+set.seed(1234)
+
+
+# 12. 워드 클라우드 생성 
+wordcloud(words = df_word$Var1,
+          freq=df_word$Freq,
+          min.freq = 2, max.words=200, 
+          random.order=F,
+          rot.per=.1, scale=c(4, 0.3), colors=pal)
