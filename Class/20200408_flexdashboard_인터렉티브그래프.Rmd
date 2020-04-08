@@ -1,0 +1,39 @@
+---
+title: "Dygraphs"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: columns
+---
+
+```{r setup, include=FALSE}
+library(flexdashboard)
+library(dygraphs)
+library(plotly)
+#install.packages("highcharter")
+library(highcharter)
+```
+
+### Lung Daths (All)
+
+```{r}
+dygraph(ldeaths)
+plot_ly(mtcars, x=~hp, y=~mpg, type='scatter', mode='markers', color=~as.factor(cyl))
+
+```
+
+### Lung Deaths (Male)
+
+```{r}
+# dygraph(mdeaths)
+hchart(mtcars, "scatter", hcaes(x=hp, y=mpg, group=as.factor(cyl)))
+
+```
+
+### Lung Deaths (Female)
+
+```{r}
+# dygraph(fdeaths)
+hchart(diamonds$price, color="#B71C1C", name="Price") %>%  hc_title(text="You can zoom me")
+
+```
+

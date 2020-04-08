@@ -1,0 +1,53 @@
+---
+title: "Figure Sizes"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: columns
+---
+
+Column
+-----------------------------------------------------------------------
+
+### Chart 1 (12, 7)
+
+```{r, fig.width=12, fig.height=7}
+plot(cars)
+```
+
+Column
+-----------------------------------------------------------------------
+
+### Chart 2 (5, 5)
+
+```{r, fig.width=5, fig.height=5}
+plot(pressure)
+```
+
+Column
+-----------------------------------------------------------------------
+
+### Chart 3 (10, 7)
+
+```{r, fig.width=10, fig.height=7}
+plot(airmiles)
+```
+
+Column
+-----------------------------------------------------------------------
+
+### Chart 5 (10, 7)
+
+```{r}
+library(shiny)
+
+renderTable({
+  head(mtcars, 10,7)
+})
+```
+
+```{r}
+DT::datatable(mtcars,
+              options = list(pageLength = 25,
+                             bPaginate =T),
+              filter = "top")
+```
