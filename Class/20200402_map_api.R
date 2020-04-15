@@ -33,7 +33,7 @@ str(station_data)
 station_code <- as.character(station_data$"구주소")
 
 # google api key 등록
-googleAPIkey <- "AIzaSyBiV7Q9ZswJ9QmsBOE6oZ2ls1iGIavXXSo"
+googleAPIkey <- "xxxxxxxxxxx"
 
 register_google(googleAPIkey)
 
